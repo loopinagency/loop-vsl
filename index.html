@@ -1,2424 +1,2174 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>Loop — Gestão em Jornada de Receita</title>
-
-  <link
-    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap"
-    rel="stylesheet"
-  >
-
-  <style>
-    *,
-    *::before,
-    *::after {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    :root {
-      --g: #2ecc71;
-      --g2: #27ae60;
-      --bg: #080808;
-      --s1: #0f0f0f;
-      --s2: #141414;
-      --border: rgba(255, 255, 255, 0.06);
-      --border-green: rgba(46, 204, 113, 0.3);
-      --text: #efefef;
-      --muted: #707070;
-      --muted2: #444;
-      --error: #e74c3c;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: "DM Sans", sans-serif;
-      overflow-x: hidden;
-      cursor: default;
-    }
-
-    /* PAINÉIS */
-
-    .panel {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 60px 24px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .panel.long-panel {
-      justify-content: flex-start;
-      padding-top: 70px;
-      padding-bottom: 90px;
-    }
-
-    .panel::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-
-      background-image:
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
-
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .panel > * {
-      position: relative;
-      z-index: 1;
-    }
-
-    .c {
-      width: 100%;
-      max-width: 680px;
-      margin: 0 auto;
-    }
-
-    /* LOGO */
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 64px;
-    }
-
-    .logo.compact {
-      margin-bottom: 42px;
-    }
-
-    .logo-mark {
-      font-family: "Bebas Neue", sans-serif;
-      font-size: 26px;
-      letter-spacing: 3px;
-      color: #fff;
-      line-height: 1;
-    }
-
-    .logo-mark b {
-      color: var(--g);
-    }
-
-    .logo-pipe {
-      width: 1px;
-      height: 18px;
-      background: var(--border);
-    }
-
-    .logo-label {
-      font-size: 10px;
-      letter-spacing: 2.5px;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-
-    /* TEXTOS */
-
-    .eyebrow {
-      font-size: 10px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--g);
-      margin-bottom: 20px;
-
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .eyebrow::before {
-      content: "";
-      display: block;
-      width: 24px;
-      height: 1px;
-      background: var(--g);
-    }
-
-    h1 {
-      font-family: "Bebas Neue", sans-serif;
-      font-size: clamp(48px, 9vw, 80px);
-      line-height: 0.95;
-      letter-spacing: 1px;
-      color: #fff;
-      margin-bottom: 32px;
-    }
-
-    h1 em {
-      color: var(--g);
-      font-style: normal;
-      display: block;
-    }
-
-    h2 {
-      font-family: "Bebas Neue", sans-serif;
-      font-size: clamp(34px, 6vw, 54px);
-      line-height: 1;
-      color: #fff;
-      margin-bottom: 28px;
-      letter-spacing: 0.5px;
-    }
-
-    h3 {
-      font-family: "Bebas Neue", sans-serif;
-      font-size: 26px;
-      line-height: 1.1;
-      color: #fff;
-      letter-spacing: 0.4px;
-      margin-bottom: 18px;
-    }
-
-    .body {
-      font-size: 16px;
-      line-height: 1.75;
-      color: #aaa;
-      margin-bottom: 20px;
-      max-width: 580px;
-    }
-
-    .body strong {
-      color: #ddd;
-      font-weight: 500;
-    }
-
-    .small-copy {
-      color: #777;
-      font-size: 13px;
-      line-height: 1.6;
-      margin-top: 14px;
-    }
-
-    .rule {
-      width: 100%;
-      height: 1px;
-      background: var(--border);
-      margin: 34px 0;
-    }
-
-    /* BOTÕES */
-
-    .btn {
-      border: none;
-      outline: none;
-      background: var(--g);
-      color: #07140c;
-
-      font-family: "DM Sans", sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.4px;
-
-      min-height: 54px;
-      padding: 0 24px;
-
-      cursor: pointer;
-
-      display: inline-flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 24px;
-
-      transition:
-        background 0.2s,
-        transform 0.2s,
-        opacity 0.2s;
-    }
-
-    .btn:hover {
-      background: #38dc7b;
-      transform: translateY(-1px);
-    }
-
-    .btn:active {
-      transform: translateY(0);
-    }
-
-    .btn:disabled {
-      opacity: 0.35;
-      pointer-events: none;
-    }
-
-    .btn svg {
-      width: 20px;
-      height: 20px;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 1.8;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    .btn.full {
-      width: 100%;
-    }
-
-    .btn.secondary {
-      background: transparent;
-      color: #888;
-      border: 1px solid var(--border);
-      margin-top: 12px;
-    }
-
-    .btn.secondary:hover {
-      color: #ddd;
-      border-color: rgba(255, 255, 255, 0.14);
-      background: var(--s1);
-    }
-
-    /* PROGRESSO */
-
-    .progress-wrap {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 48px;
-    }
-
-    .prog-seg {
-      height: 2px;
-      flex: 1;
-      background: var(--border);
-    }
-
-    .prog-seg.on {
-      background: var(--g);
-    }
-
-    /* PERGUNTAS */
-
-    .question-block {
-      border-top: 1px solid var(--border);
-      padding-top: 34px;
-      margin-top: 34px;
-    }
-
-    .question-number {
-      color: var(--g);
-      font-family: "Bebas Neue", sans-serif;
-      font-size: 16px;
-      letter-spacing: 2px;
-      margin-bottom: 10px;
-    }
-
-    .question-title {
-      font-size: 18px;
-      line-height: 1.5;
-      color: #e7e7e7;
-      font-weight: 500;
-      margin-bottom: 18px;
-    }
-
-    .options {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .opt {
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-
-      padding: 18px 20px;
-
-      background: var(--s1);
-      border: 1px solid var(--border);
-
-      cursor: pointer;
-      transition: all 0.2s;
-      position: relative;
-    }
-
-    .opt::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 2px;
-      background: var(--g);
-
-      transform: scaleY(0);
-      transform-origin: bottom;
-
-      transition: transform 0.25s ease;
-    }
-
-    .opt:hover {
-      border-color: rgba(46, 204, 113, 0.2);
-      background: var(--s2);
-    }
-
-    .opt:hover::before {
-      transform: scaleY(1);
-    }
-
-    .opt.sel {
-      border-color: var(--border-green);
-      background: rgba(46, 204, 113, 0.05);
-    }
-
-    .opt.sel::before {
-      transform: scaleY(1);
-    }
-
-    .opt-idx {
-      font-family: "Bebas Neue", sans-serif;
-      font-size: 18px;
-      letter-spacing: 1px;
-      color: var(--muted2);
-
-      flex-shrink: 0;
-      min-width: 22px;
-      margin-top: 1px;
-    }
-
-    .opt.sel .opt-idx {
-      color: var(--g);
-    }
-
-    .opt-txt {
-      font-size: 15px;
-      line-height: 1.5;
-      color: #bbb;
-    }
-
-    .opt:hover .opt-txt,
-    .opt.sel .opt-txt {
-      color: #eee;
-    }
-
-    .questions-action {
-      margin-top: 42px;
-    }
-
-    /* DIAGNÓSTICO */
-
-    .diag-card {
-      background: var(--s1);
-      border: 1px solid rgba(46, 204, 113, 0.15);
-      padding: 32px;
-      margin-bottom: 32px;
-      position: relative;
-    }
-
-    .diag-card::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-
-      background:
-        linear-gradient(
-          90deg,
-          var(--g),
-          transparent 70%
-        );
-    }
-
-    .diag-label {
-      font-size: 10px;
-      letter-spacing: 2.5px;
-      text-transform: uppercase;
-      color: var(--g);
-      margin-bottom: 16px;
-    }
-
-    .diag-text {
-      font-size: 15px;
-      line-height: 1.85;
-      color: #bbb;
-      white-space: pre-line;
-    }
-
-    .dots {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      padding: 8px 0;
-    }
-
-    .dot {
-      width: 6px;
-      height: 6px;
-      background: var(--g);
-      border-radius: 50%;
-
-      animation:
-        pulse 1.2s ease-in-out infinite;
-    }
-
-    .dot:nth-child(2) {
-      animation-delay: 0.2s;
-    }
-
-    .dot:nth-child(3) {
-      animation-delay: 0.4s;
-    }
-
-    @keyframes pulse {
-      0%,
-      100% {
-        opacity: 0.2;
-        transform: scale(0.8);
-      }
-
-      50% {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-
-    /* AGENDAMENTO */
-
-    .schedule-intro {
-      background: var(--s1);
-      border: 1px solid var(--border);
-      padding: 18px 20px;
-
-      color: #aaa;
-      font-size: 14px;
-      line-height: 1.7;
-
-      margin-bottom: 34px;
-    }
-
-    .schedule-intro strong {
-      color: #eee;
-      font-weight: 500;
-    }
-
-    .agenda-label {
-      font-size: 10px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 14px;
-    }
-
-    .day-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-      margin-bottom: 30px;
-    }
-
-    .day-cell {
-      min-height: 68px;
-      padding: 12px 8px;
-
-      background: var(--s1);
-      border: 1px solid var(--border);
-
-      cursor: pointer;
-      text-align: center;
-
-      transition: all 0.2s;
-    }
-
-    .day-cell:hover {
-      border-color: rgba(46, 204, 113, 0.22);
-      background: var(--s2);
-    }
-
-    .day-cell.sel {
-      border-color: var(--g);
-      background: rgba(46, 204, 113, 0.07);
-    }
-
-    .day-name {
-      color: var(--muted);
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 5px;
-    }
-
-    .day-num {
-      font-family: "Bebas Neue", sans-serif;
-      font-size: 24px;
-      color: #ddd;
-    }
-
-    .day-cell.sel .day-name,
-    .day-cell.sel .day-num {
-      color: var(--g);
-    }
-
-    .time-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      margin-bottom: 28px;
-    }
-
-    .time-cell {
-      padding: 13px 8px;
-
-      background: var(--s1);
-      border: 1px solid var(--border);
-
-      cursor: pointer;
-      color: #aaa;
-      font-size: 13px;
-      text-align: center;
-
-      transition: all 0.2s;
-    }
-
-    .time-cell:hover {
-      border-color: rgba(46, 204, 113, 0.22);
-      color: #eee;
-    }
-
-    .time-cell.sel {
-      border-color: var(--g);
-      color: var(--g);
-      background: rgba(46, 204, 113, 0.07);
-    }
-
-    .agenda-summary {
-      display: none;
-      border-left: 2px solid var(--g);
-      background: rgba(46, 204, 113, 0.05);
-      padding: 14px 16px;
-
-      color: #ccc;
-      font-size: 14px;
-      line-height: 1.5;
-
-      margin-bottom: 38px;
-    }
-
-    .form-title {
-      border-top: 1px solid var(--border);
-      padding-top: 34px;
-      margin-bottom: 24px;
-    }
-
-    /* FORMULÁRIO */
-
-    .field {
-      margin-bottom: 14px;
-    }
-
-    .field label {
-      display: block;
-
-      font-size: 10px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-
-    .field input {
-      width: 100%;
-      min-height: 50px;
-
-      background: var(--s1);
-      border: 1px solid var(--border);
-      color: var(--text);
-
-      font-family: "DM Sans", sans-serif;
-      font-size: 15px;
-
-      padding: 14px 16px;
-      outline: none;
-
-      transition: border-color 0.2s;
-
-      border-radius: 0;
-      -webkit-appearance: none;
-    }
-
-    .field input:focus {
-      border-color: rgba(46, 204, 113, 0.45);
-    }
-
-    .field input::placeholder {
-      color: var(--muted2);
-    }
-
-    .row2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .err {
-      font-size: 13px;
-      color: var(--error);
-      margin: 8px 0 18px;
-      display: none;
-      line-height: 1.5;
-    }
-
-    /* CONFIRMAÇÃO */
-
-    .confirm-ring {
-      width: 72px;
-      height: 72px;
-
-      border: 1.5px solid var(--g);
-      border-radius: 50%;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      margin-bottom: 32px;
-    }
-
-    .confirm-ring svg {
-      width: 30px;
-      height: 30px;
-
-      stroke: var(--g);
-      fill: none;
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    .confirm-table {
-      margin: 28px 0 36px;
-    }
-
-    .confirm-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-
-      padding: 14px 0;
-      border-bottom: 1px solid var(--border);
-
-      font-size: 14px;
-      gap: 16px;
-    }
-
-    .confirm-row:last-child {
-      border-bottom: none;
-    }
-
-    .confirm-row span:first-child {
-      color: var(--muted);
-      flex-shrink: 0;
-    }
-
-    .confirm-row span:last-child {
-      color: #ddd;
-      text-align: right;
-    }
-
-    /* FUNDO */
-
-    .glow {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(120px);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .glow-1 {
-      width: 500px;
-      height: 500px;
-
-      background: rgba(46, 204, 113, 0.04);
-
-      top: -100px;
-      right: -150px;
-    }
-
-    .glow-2 {
-      width: 400px;
-      height: 400px;
-
-      background: rgba(46, 204, 113, 0.03);
-
-      bottom: -80px;
-      left: -100px;
-    }
-
-    #p0::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-
-      background:
-        repeating-linear-gradient(
-          0deg,
-          transparent,
-          transparent 2px,
-          rgba(0, 0, 0, 0.03) 2px,
-          rgba(0, 0, 0, 0.03) 4px
-        );
-
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .fnote {
-      font-size: 11px;
-      color: var(--muted2);
-      letter-spacing: 0.5px;
-
-      margin-top: 48px;
-      padding-top: 24px;
-
-      border-top: 1px solid var(--border);
-    }
-
-    /* RESPONSIVO */
-
-    @media (max-width: 620px) {
-      .panel {
-        padding: 48px 20px;
-      }
-
-      .panel.long-panel {
-        padding-top: 48px;
-      }
-
-      .logo {
-        margin-bottom: 48px;
-      }
-
-      h1 {
-        font-size: 52px;
-      }
-
-      .row2 {
-        grid-template-columns: 1fr;
-        gap: 0;
-      }
-
-      .diag-card {
-        padding: 24px;
-      }
-    }
-
-    @media (max-width: 430px) {
-      .day-grid {
-        grid-template-columns: repeat(5, 1fr);
-        gap: 5px;
-      }
-
-      .day-cell {
-        min-height: 62px;
-        padding: 10px 4px;
-      }
-
-      .time-grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
-
-      .logo-label {
-        font-size: 8px;
-        letter-spacing: 1.8px;
-      }
-
-      .opt {
-        padding: 16px;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Loop — Gestão em Jornada de Receita</title>
+
+<link
+  href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap"
+  rel="stylesheet"
+>
+
+<style>
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --g: #2ecc71;
+  --g2: #27ae60;
+  --bg: #080808;
+  --s1: #0f0f0f;
+  --s2: #141414;
+  --border: rgba(255, 255, 255, 0.06);
+  --text: #efefef;
+  --muted: #666;
+  --muted2: #444;
+  --error: #e74c3c;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "DM Sans", sans-serif;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* ── SEÇÕES ───────────────────────────────── */
+
+.panel {
+  min-height: 100vh;
+  min-height: 100svh;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  padding: 60px 24px;
+
+  position: relative;
+  overflow: hidden;
+}
+
+.panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+
+  pointer-events: none;
+  z-index: 0;
+}
+
+.panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+.question-panel {
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
+.c {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+/* ── LOGO ─────────────────────────────────── */
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 64px;
+}
+
+.logo-mark {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 26px;
+  letter-spacing: 3px;
+  color: #fff;
+  line-height: 1;
+}
+
+.logo-mark b {
+  color: var(--g);
+}
+
+.logo-pipe {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+}
+
+.logo-label {
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ── TÍTULOS ──────────────────────────────── */
+
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--g);
+  margin-bottom: 20px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.eyebrow::before {
+  content: "";
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: var(--g);
+}
+
+h1 {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: clamp(48px, 9vw, 80px);
+  line-height: 0.95;
+  letter-spacing: 1px;
+  color: #fff;
+  margin-bottom: 32px;
+}
+
+h1 em {
+  color: var(--g);
+  font-style: normal;
+  display: block;
+}
+
+h2 {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: clamp(32px, 6vw, 52px);
+  line-height: 1;
+  color: #fff;
+  margin-bottom: 28px;
+  letter-spacing: 0.5px;
+}
+
+/* ── TEXTOS ───────────────────────────────── */
+
+.body {
+  font-size: 16px;
+  line-height: 1.75;
+  color: #aaa;
+  margin-bottom: 20px;
+  max-width: 560px;
+}
+
+.body strong {
+  color: #ddd;
+  font-weight: 500;
+}
+
+.rule {
+  width: 100%;
+  height: 1px;
+  background: var(--border);
+  margin: 34px 0;
+}
+
+/* ── BOTÃO ────────────────────────────────── */
+
+.btn {
+  border: none;
+  outline: none;
+
+  background: var(--g);
+  color: #07140c;
+
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+
+  min-height: 54px;
+  padding: 0 24px;
+
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+
+  transition:
+    background 0.2s,
+    transform 0.2s,
+    opacity 0.2s;
+}
+
+.btn:hover {
+  background: #38dc7b;
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.btn svg {
+  width: 20px;
+  height: 20px;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ── PROGRESSO ────────────────────────────── */
+
+.progress-wrap {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 48px;
+}
+
+.prog-seg {
+  height: 2px;
+  flex: 1;
+  background: var(--border);
+}
+
+.prog-seg.on {
+  background: var(--g);
+}
+
+/* ── OPÇÕES ───────────────────────────────── */
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.opt {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+
+  padding: 20px 22px;
+
+  background: var(--s1);
+  border: 1px solid var(--border);
+
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+.opt::before {
+  content: "";
+
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+
+  width: 2px;
+  background: var(--g);
+
+  transform: scaleY(0);
+  transform-origin: bottom;
+
+  transition: transform 0.25s ease;
+}
+
+.opt:hover {
+  border-color: rgba(46, 204, 113, 0.2);
+  background: var(--s2);
+}
+
+.opt:hover::before {
+  transform: scaleY(1);
+}
+
+.opt.sel {
+  border-color: rgba(46, 204, 113, 0.45);
+  background: rgba(46, 204, 113, 0.08);
+  transform: translateX(3px);
+}
+
+.opt.sel::before {
+  transform: scaleY(1);
+}
+
+.opt-idx {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 18px;
+  letter-spacing: 1px;
+  color: var(--muted2);
+
+  flex-shrink: 0;
+  margin-top: 1px;
+  min-width: 20px;
+
+  transition: color 0.2s;
+}
+
+.opt.sel .opt-idx {
+  color: var(--g);
+}
+
+.opt-txt {
+  font-size: 15px;
+  line-height: 1.5;
+  color: #bbb;
+  transition: color 0.2s;
+}
+
+.opt:hover .opt-txt,
+.opt.sel .opt-txt {
+  color: #eee;
+}
+
+/* ── DIAGNÓSTICO ──────────────────────────── */
+
+.diag-card {
+  background: var(--s1);
+  border: 1px solid rgba(46, 204, 113, 0.15);
+  padding: 32px;
+  margin-bottom: 36px;
+  position: relative;
+}
+
+.diag-card::before {
+  content: "";
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  height: 2px;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--g),
+      transparent 70%
+    );
+}
+
+.diag-label {
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--g);
+  margin-bottom: 16px;
+}
+
+.diag-text {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #bbb;
+}
+
+/* ── AGENDA ───────────────────────────────── */
+
+.agenda-label {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+
+.day-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 30px;
+}
+
+.day-cell {
+  padding: 13px 8px;
+
+  background: var(--s1);
+  border: 1px solid var(--border);
+
+  cursor: pointer;
+  text-align: center;
+
+  transition: all 0.2s;
+}
+
+.day-cell:hover {
+  border-color: rgba(46, 204, 113, 0.2);
+  background: var(--s2);
+}
+
+.day-cell.sel {
+  border-color: var(--g);
+  color: var(--g);
+  background: rgba(46, 204, 113, 0.06);
+}
+
+.day-name {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.day-num {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 23px;
+  color: #ddd;
+}
+
+.day-cell.sel .day-name,
+.day-cell.sel .day-num {
+  color: var(--g);
+}
+
+.time-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.time-cell {
+  padding: 13px 8px;
+
+  background: var(--s1);
+  border: 1px solid var(--border);
+
+  cursor: pointer;
+  color: #aaa;
+  font-size: 13px;
+  text-align: center;
+
+  transition: all 0.2s;
+}
+
+.time-cell:hover {
+  border-color: rgba(46, 204, 113, 0.2);
+  color: #eee;
+}
+
+.time-cell.sel {
+  border-color: var(--g);
+  color: var(--g);
+  background: rgba(46, 204, 113, 0.06);
+}
+
+/* ── FORMULÁRIO ───────────────────────────── */
+
+.field {
+  margin-bottom: 14px;
+}
+
+.field label {
+  display: block;
+
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.field input {
+  width: 100%;
+
+  background: var(--s1);
+  border: 1px solid var(--border);
+  color: var(--text);
+
+  font-family: "DM Sans", sans-serif;
+  font-size: 15px;
+
+  padding: 14px 16px;
+  outline: none;
+
+  transition: border-color 0.2s;
+
+  -webkit-appearance: none;
+  border-radius: 0;
+}
+
+.field input:focus {
+  border-color: rgba(46, 204, 113, 0.4);
+}
+
+.field input::placeholder {
+  color: var(--muted2);
+}
+
+.row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ── CONFIRMAÇÃO ──────────────────────────── */
+
+.confirm-ring {
+  width: 72px;
+  height: 72px;
+
+  border: 1.5px solid var(--g);
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 32px;
+}
+
+.confirm-ring svg {
+  width: 30px;
+  height: 30px;
+
+  stroke: var(--g);
+  fill: none;
+
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.confirm-table {
+  margin-bottom: 36px;
+}
+
+.confirm-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  padding: 14px 0;
+
+  border-bottom: 1px solid var(--border);
+
+  font-size: 14px;
+  gap: 16px;
+}
+
+.confirm-row:last-child {
+  border-bottom: none;
+}
+
+.confirm-row span:first-child {
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.confirm-row span:last-child {
+  color: #ddd;
+  text-align: right;
+}
+
+/* ── CARREGAMENTO ─────────────────────────── */
+
+.dots {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+
+  background: var(--g);
+  border-radius: 50%;
+
+  animation:
+    pulse 1.2s ease-in-out infinite;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(0.8);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ── ERRO ─────────────────────────────────── */
+
+.err {
+  font-size: 13px;
+  color: var(--error);
+  margin-bottom: 16px;
+  display: none;
+}
+
+/* ── FUNDO ────────────────────────────────── */
+
+.glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.glow-1 {
+  width: 500px;
+  height: 500px;
+
+  background: rgba(46, 204, 113, 0.04);
+
+  top: -100px;
+  right: -150px;
+}
+
+.glow-2 {
+  width: 400px;
+  height: 400px;
+
+  background: rgba(46, 204, 113, 0.03);
+
+  bottom: -80px;
+  left: -100px;
+}
+
+#p0::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.03) 2px,
+      rgba(0, 0, 0, 0.03) 4px
+    );
+
+  pointer-events: none;
+  z-index: 0;
+}
+
+.fnote {
+  font-size: 11px;
+  color: var(--muted2);
+  letter-spacing: 0.5px;
+
+  margin-top: 48px;
+  padding-top: 24px;
+
+  border-top: 1px solid var(--border);
+}
+
+/* ── MOBILE ───────────────────────────────── */
+
+@media (max-width: 520px) {
+  .panel {
+    padding: 42px 20px;
+  }
+
+  .question-panel {
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+
+  .question-panel .progress-wrap {
+    margin-bottom: 27px;
+  }
+
+  .question-panel .eyebrow {
+    margin-bottom: 14px;
+  }
+
+  .question-panel h2 {
+    font-size: 37px;
+    margin-bottom: 22px;
+  }
+
+  .question-panel .options {
+    gap: 8px;
+  }
+
+  .question-panel .opt {
+    padding: 15px 16px;
+    gap: 12px;
+  }
+
+  .question-panel .opt-txt {
+    font-size: 14px;
+    line-height: 1.38;
+  }
+
+  .day-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .time-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .row2 {
+    grid-template-columns: 1fr;
+  }
+
+  h1 {
+    font-size: 52px;
+  }
+}
+
+@media (max-height: 670px) and (max-width: 520px) {
+  .question-panel {
+    justify-content: flex-start;
+    overflow-y: auto;
+  }
+
+  .question-panel h2 {
+    font-size: 33px;
+  }
+
+  .question-panel .opt {
+    padding: 12px 14px;
+  }
+}
+</style>
 </head>
 
 <body>
 
-  <!-- ABERTURA -->
+<!-- ═══ PAINEL 0: VSL ═══════════════════════════════ -->
 
-  <section class="panel" id="p0">
-    <div class="glow glow-1"></div>
-    <div class="glow glow-2"></div>
+<section class="panel" id="p0">
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
 
-    <div class="c">
-      <div class="logo">
-        <div class="logo-mark">
-          LO<b>O</b>P
-        </div>
+  <div class="c">
+    <div class="logo">
+      <div class="logo-mark">LO<b>O</b>P</div>
+      <div class="logo-pipe"></div>
+      <div class="logo-label">Gestão em Jornada de Receita</div>
+    </div>
 
-        <div class="logo-pipe"></div>
+    <div class="eyebrow">Para donos de clínica</div>
 
-        <div class="logo-label">
-          Gestão em Jornada de Receita
+    <h1>
+      Você já investiu.<br>
+      Já contratou.<br>
+      <em>O caixa ainda não reflete.</em>
+    </h1>
+
+    <p class="body">
+      Você já investiu em tráfego. Já teve equipe de vendas. Já contratou solução.<br>
+      <strong>O caixa ainda não reflete o esforço.</strong>
+    </p>
+
+    <p class="body">
+      Não é porque as soluções eram ruins.<br>
+      É porque cada uma resolveu um pedaço — e ninguém olhou pro caminho inteiro.
+    </p>
+
+    <p class="body">
+      Enquanto isso, pacientes entram, travam, somem.<br>
+      E o dinheiro vaza em algum ponto da jornada sem que ninguém consiga nomear onde.
+    </p>
+
+    <div class="rule"></div>
+
+    <p
+      class="body"
+      style="font-size:15px; color:#888; font-style:italic;"
+    >
+      Receita não nasce de uma ação isolada. Ela nasce quando atração, conversão e pós-venda funcionam juntos — como uma jornada.
+    </p>
+
+    <div style="height:36px"></div>
+
+    <button
+      class="btn"
+      type="button"
+      onclick="go(1)"
+    >
+      <span>Quero entender onde estou perdendo</span>
+
+      <svg viewBox="0 0 24 24">
+        <path d="M5 12h14M12 5l7 7-7 7"></path>
+      </svg>
+    </button>
+  </div>
+</section>
+
+<!-- ═══ PAINEL 1: PERGUNTA 1 ═══════════════════════ -->
+
+<section
+  class="panel question-panel"
+  id="p1"
+  style="display:none"
+>
+  <div class="c">
+    <div class="progress-wrap">
+      <div class="prog-seg on"></div>
+      <div class="prog-seg"></div>
+      <div class="prog-seg"></div>
+      <div class="prog-seg"></div>
+    </div>
+
+    <div class="eyebrow">Pergunta 1 de 4</div>
+
+    <h2>O que você mais precisa resolver agora no caixa?</h2>
+
+    <div class="options">
+      <div
+        class="opt"
+        onclick="pickAndAdvance('q1','Aumentar receita',this,2)"
+      >
+        <div class="opt-idx">01</div>
+        <div class="opt-txt">Aumentar receita</div>
+      </div>
+
+      <div
+        class="opt"
+        onclick="pickAndAdvance('q1','Melhorar lucratividade',this,2)"
+      >
+        <div class="opt-idx">02</div>
+        <div class="opt-txt">Melhorar lucratividade</div>
+      </div>
+
+      <div
+        class="opt"
+        onclick="pickAndAdvance('q1','Reduzir perdas',this,2)"
+      >
+        <div class="opt-idx">03</div>
+        <div class="opt-txt">Reduzir perdas no caminho</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PAINEL 2: PERGUNTA 2 ═══════════════════════ -->
+
+<section
+  class="panel question-panel"
+  id="p2"
+  style="display:none"
+>
+  <div class="c">
+    <div class="progress-wrap">
+      <div class="prog-seg on"></div>
+      <div class="prog-seg on"></div>
+      <div class="prog-seg"></div>
+      <div class="prog-seg"></div>
+    </div>
+
+    <div class="eyebrow">Pergunta 2 de 4</div>
+
+    <h2>Onde você sente que o dinheiro escapa mais hoje?</h2>
+
+    <div class="options">
+      <div
+        class="opt"
+        onclick="pickAndAdvance(
+          'q2',
+          'Na entrada: chegam pessoas sem perfil, sem intenção real ou focadas apenas em preço',
+          this,
+          3
+        )"
+      >
+        <div class="opt-idx">01</div>
+
+        <div class="opt-txt">
+          Na entrada — chegam pessoas sem perfil, sem intenção real ou focadas apenas em preço
         </div>
       </div>
 
-      <div class="eyebrow">
-        Para donos de clínica
+      <div
+        class="opt"
+        onclick="pickAndAdvance(
+          'q2',
+          'No atendimento e na agenda: a pessoa chama, demonstra interesse, mas some antes de agendar ou comparecer',
+          this,
+          3
+        )"
+      >
+        <div class="opt-idx">02</div>
+
+        <div class="opt-txt">
+          No atendimento e na agenda — a pessoa chama, demonstra interesse, mas some antes de agendar ou comparecer
+        </div>
       </div>
 
-      <h1>
-        Você já investiu.<br>
-        Já contratou.<br>
-        <em>O caixa ainda não reflete.</em>
-      </h1>
+      <div
+        class="opt"
+        onclick="pickAndAdvance(
+          'q2',
+          'Na avaliação e no fechamento: o paciente avança, mas trava na proposta, na decisão ou no acompanhamento',
+          this,
+          3
+        )"
+      >
+        <div class="opt-idx">03</div>
 
-      <p class="body">
-        Você já investiu em tráfego. Já teve equipe de vendas.
-        Já contratou solução.<br>
+        <div class="opt-txt">
+          Na avaliação e no fechamento — o paciente avança, mas trava na proposta, na decisão ou no acompanhamento
+        </div>
+      </div>
 
-        <strong>
-          O caixa ainda não reflete o esforço.
-        </strong>
-      </p>
+      <div
+        class="opt"
+        onclick="pickAndAdvance(
+          'q2',
+          'No pós-venda e na base: o paciente fecha, mas não retorna, não recompra e pouco indica',
+          this,
+          3
+        )"
+      >
+        <div class="opt-idx">04</div>
 
-      <p class="body">
-        Não é porque as soluções eram ruins.<br>
+        <div class="opt-txt">
+          No pós-venda e na base — o paciente fecha, mas não retorna, não recompra e pouco indica
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-        É porque cada uma resolveu um pedaço — e ninguém olhou
-        para o caminho inteiro.
-      </p>
+<!-- ═══ PAINEL 3: PERGUNTA 3 ═══════════════════════ -->
 
-      <p class="body">
-        Enquanto isso, pacientes entram, travam e somem.
+<section
+  class="panel question-panel"
+  id="p3"
+  style="display:none"
+>
+  <div class="c">
+    <div class="progress-wrap">
+      <div class="prog-seg on"></div>
+      <div class="prog-seg on"></div>
+      <div class="prog-seg on"></div>
+      <div class="prog-seg"></div>
+    </div>
 
-        E o dinheiro vaza em algum ponto da jornada sem que
-        ninguém consiga nomear onde.
-      </p>
+    <div class="eyebrow">Pergunta 3 de 4</div>
 
-      <div class="rule"></div>
+    <h2>Você sabe onde está o gargalo?</h2>
 
+    <div class="options">
+      <div
+        class="opt"
+        onclick="pickAndAdvance(
+          'q3',
+          'Sei onde está mas não sei como resolver',
+          this,
+          4
+        )"
+      >
+        <div class="opt-idx">01</div>
+
+        <div class="opt-txt">
+          Sei onde está — mas não sei como resolver
+        </div>
+      </div>
+
+      <div
+        class="opt"
+        onclick="pickAndAdvance(
+          'q3',
+          'Sinto que tem algo errado mas não sei onde',
+          this,
+          4
+        )"
+      >
+        <div class="opt-idx">02</div>
+
+        <div class="opt-txt">
+          Sinto que tem algo errado — mas não consigo nomear onde
+        </div>
+      </div>
+
+      <div
+        class="opt"
+        onclick="pickAndAdvance(
+          'q3',
+          'Não tenho clareza nenhuma sobre isso',
+          this,
+          4
+        )"
+      >
+        <div class="opt-idx">03</div>
+
+        <div class="opt-txt">
+          Não tenho clareza nenhuma sobre isso
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PAINEL 4: PERGUNTA 4 ═══════════════════════ -->
+
+<section
+  class="panel question-panel"
+  id="p4"
+  style="display:none"
+>
+  <div class="c">
+    <div class="progress-wrap">
+      <div class="prog-seg on"></div>
+      <div class="prog-seg on"></div>
+      <div class="prog-seg on"></div>
+      <div class="prog-seg on"></div>
+    </div>
+
+    <div class="eyebrow">Pergunta 4 de 4</div>
+
+    <h2>Como você descreveria sua clínica hoje?</h2>
+
+    <div class="options">
+      <div
+        class="opt"
+        onclick="pickAndAdvance(
+          'q4',
+          'Estamos crescendo mas o lucro não acompanha',
+          this,
+          'ai'
+        )"
+      >
+        <div class="opt-idx">01</div>
+
+        <div class="opt-txt">
+          Estamos crescendo — mas o lucro não acompanha o volume
+        </div>
+      </div>
+
+      <div
+        class="opt"
+        onclick="pickAndAdvance(
+          'q4',
+          'Estamos estagnados e precisamos de movimento',
+          this,
+          'ai'
+        )"
+      >
+        <div class="opt-idx">02</div>
+
+        <div class="opt-txt">
+          Estamos estagnados — precisamos de movimento real
+        </div>
+      </div>
+
+      <div
+        class="opt"
+        onclick="pickAndAdvance(
+          'q4',
+          'Estamos perdendo espaço e precisamos reagir',
+          this,
+          'ai'
+        )"
+      >
+        <div class="opt-idx">03</div>
+
+        <div class="opt-txt">
+          Estamos perdendo espaço — precisamos reagir agora
+        </div>
+      </div>
+
+      <div
+        class="opt"
+        onclick="pickAndAdvance(
+          'q4',
+          'A operação está madura e saudável, mas buscamos mais previsibilidade e escala',
+          this,
+          'ai'
+        )"
+      >
+        <div class="opt-idx">04</div>
+
+        <div class="opt-txt">
+          A operação está madura e saudável — mas buscamos mais previsibilidade e escala
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PAINEL 5: DIAGNÓSTICO ═══════════════════════ -->
+
+<section
+  class="panel"
+  id="p5"
+  style="display:none"
+>
+  <div class="c">
+    <div class="eyebrow">Leitura da jornada</div>
+
+    <h2 id="diag-title">
+      Analisando sua jornada...
+    </h2>
+
+    <div id="diag-loading">
       <p
         class="body"
-        style="
-          font-size: 15px;
-          color: #888;
-          font-style: italic;
-        "
+        style="margin-bottom:20px"
       >
-        Receita não nasce de uma ação isolada.
-
-        Ela nasce quando atração, conversão e pós-venda
-        funcionam juntos — como uma jornada.
+        Cruzando suas respostas com a metodologia da Loop.
       </p>
 
-      <div style="height: 36px;"></div>
+      <div class="dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+
+    <div
+      id="diag-result"
+      style="display:none"
+    >
+      <div class="diag-card">
+        <div class="diag-label">
+          Diagnóstico inicial — Loop
+        </div>
+
+        <div
+          class="diag-text"
+          id="diag-text"
+        ></div>
+      </div>
 
       <button
         class="btn"
         type="button"
-        onclick="go(1)"
+        onclick="go(6)"
       >
-        <span>
-          Quero entender onde estou perdendo
-        </span>
+        <span>Agendar pré-diagnóstico</span>
 
-        <svg viewBox="0 0 24 24" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
           <path d="M5 12h14M12 5l7 7-7 7"></path>
         </svg>
       </button>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- PERGUNTAS -->
+<!-- ═══ PAINEL 6: AGENDA ════════════════════════════ -->
 
-  <section
-    class="panel long-panel"
-    id="p1"
-    style="display: none;"
-  >
-    <div class="c">
-      <div class="logo compact">
-        <div class="logo-mark">
-          LO<b>O</b>P
-        </div>
+<section
+  class="panel"
+  id="p6"
+  style="display:none"
+>
+  <div class="c">
+    <div class="eyebrow">Agendamento</div>
 
-        <div class="logo-pipe"></div>
+    <h2>Escolha o melhor dia e horário.</h2>
 
-        <div class="logo-label">
-          Leitura rápida da jornada
-        </div>
-      </div>
-
-      <div class="progress-wrap">
-        <div class="prog-seg on"></div>
-        <div class="prog-seg on"></div>
-        <div class="prog-seg on"></div>
-        <div class="prog-seg on"></div>
-      </div>
-
-      <div class="eyebrow">
-        Quatro pontos rápidos
-      </div>
-
-      <h2>
-        Onde a sua jornada parece perder força?
-      </h2>
-
-      <p class="body">
-        Marque a opção que mais se aproxima da realidade
-        da clínica hoje.
-
-        Não precisa ter certeza absoluta.
-      </p>
-
-      <!-- PERGUNTA 1 -->
-
-      <div class="question-block">
-        <div class="question-number">
-          01
-        </div>
-
-        <div class="question-title">
-          O que você mais precisa resolver agora no caixa?
-        </div>
-
-        <div class="options">
-          <div
-            class="opt"
-            onclick="pick('q1', 'Aumentar receita', this)"
-          >
-            <div class="opt-idx">
-              01
-            </div>
-
-            <div class="opt-txt">
-              Aumentar receita
-            </div>
-          </div>
-
-          <div
-            class="opt"
-            onclick="pick('q1', 'Melhorar lucratividade', this)"
-          >
-            <div class="opt-idx">
-              02
-            </div>
-
-            <div class="opt-txt">
-              Melhorar lucratividade
-            </div>
-          </div>
-
-          <div
-            class="opt"
-            onclick="pick('q1', 'Reduzir perdas no caminho', this)"
-          >
-            <div class="opt-idx">
-              03
-            </div>
-
-            <div class="opt-txt">
-              Reduzir perdas no caminho
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PERGUNTA 2 -->
-
-      <div class="question-block">
-        <div class="question-number">
-          02
-        </div>
-
-        <div class="question-title">
-          Em qual parte da jornada você sente que mais
-          oportunidades se perdem?
-        </div>
-
-        <div class="options">
-          <div
-            class="opt"
-            onclick="pick(
-              'q2',
-              'Entrada desqualificada: muita gente sem perfil ou focada apenas em preço',
-              this
-            )"
-          >
-            <div class="opt-idx">
-              01
-            </div>
-
-            <div class="opt-txt">
-              Na entrada — chega muita gente sem perfil,
-              sem intenção real ou focada apenas em preço
-            </div>
-          </div>
-
-          <div
-            class="opt"
-            onclick="pick(
-              'q2',
-              'Atendimento e agenda: pessoas interessadas chamam, mas somem antes de agendar ou comparecer',
-              this
-            )"
-          >
-            <div class="opt-idx">
-              02
-            </div>
-
-            <div class="opt-txt">
-              No atendimento e na agenda — a pessoa chama,
-              demonstra interesse, mas some antes de agendar
-              ou comparecer
-            </div>
-          </div>
-
-          <div
-            class="opt"
-            onclick="pick(
-              'q2',
-              'Avaliação e fechamento: o paciente avança, mas trava na proposta ou não recebe acompanhamento',
-              this
-            )"
-          >
-            <div class="opt-idx">
-              03
-            </div>
-
-            <div class="opt-txt">
-              Na avaliação e no fechamento — o paciente avança,
-              mas trava na proposta, na decisão ou no acompanhamento
-            </div>
-          </div>
-
-          <div
-            class="opt"
-            onclick="pick(
-              'q2',
-              'Pós-venda e base: pacientes fecham, mas não retornam, não recompram e pouco indicam',
-              this
-            )"
-          >
-            <div class="opt-idx">
-              04
-            </div>
-
-            <div class="opt-txt">
-              No pós-venda e na base — o paciente fecha,
-              mas não retorna, não recompra e pouco indica
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PERGUNTA 3 -->
-
-      <div class="question-block">
-        <div class="question-number">
-          03
-        </div>
-
-        <div class="question-title">
-          Hoje você consegue apontar com segurança onde
-          essa perda acontece?
-        </div>
-
-        <div class="options">
-          <div
-            class="opt"
-            onclick="pick(
-              'q3',
-              'Sei exatamente onde está e tenho números',
-              this
-            )"
-          >
-            <div class="opt-idx">
-              01
-            </div>
-
-            <div class="opt-txt">
-              Sim — sei onde está e tenho números para acompanhar
-            </div>
-          </div>
-
-          <div
-            class="opt"
-            onclick="pick(
-              'q3',
-              'Tenho suspeitas, mas não consigo provar com dados',
-              this
-            )"
-          >
-            <div class="opt-idx">
-              02
-            </div>
-
-            <div class="opt-txt">
-              Tenho suspeitas, mas ainda não consigo provar
-              com dados
-            </div>
-          </div>
-
-          <div
-            class="opt"
-            onclick="pick(
-              'q3',
-              'Não consigo enxergar onde a jornada perde força',
-              this
-            )"
-          >
-            <div class="opt-idx">
-              03
-            </div>
-
-            <div class="opt-txt">
-              Não consigo enxergar com clareza onde
-              a jornada perde força
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PERGUNTA 4 -->
-
-      <div class="question-block">
-        <div class="question-number">
-          04
-        </div>
-
-        <div class="question-title">
-          Qual cenário descreve melhor a clínica neste momento?
-        </div>
-
-        <div class="options">
-          <div
-            class="opt"
-            onclick="pick(
-              'q4',
-              'Crescendo, mas o lucro não acompanha',
-              this
-            )"
-          >
-            <div class="opt-idx">
-              01
-            </div>
-
-            <div class="opt-txt">
-              Estamos crescendo, mas o lucro não acompanha o volume
-            </div>
-          </div>
-
-          <div
-            class="opt"
-            onclick="pick(
-              'q4',
-              'Madura e saudável, buscando mais previsibilidade e escala',
-              this
-            )"
-          >
-            <div class="opt-idx">
-              02
-            </div>
-
-            <div class="opt-txt">
-              A operação está madura e saudável,
-              mas buscamos mais previsibilidade e escala
-            </div>
-          </div>
-
-          <div
-            class="opt"
-            onclick="pick(
-              'q4',
-              'Estagnada e precisando de movimento',
-              this
-            )"
-          >
-            <div class="opt-idx">
-              03
-            </div>
-
-            <div class="opt-txt">
-              Estamos estagnados e precisamos gerar movimento real
-            </div>
-          </div>
-
-          <div
-            class="opt"
-            onclick="pick(
-              'q4',
-              'Perdendo espaço e precisando reagir',
-              this
-            )"
-          >
-            <div class="opt-idx">
-              04
-            </div>
-
-            <div class="opt-txt">
-              Estamos perdendo espaço e precisamos reagir
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="questions-action">
-        <div class="err" id="questions-err">
-          Responda os quatro pontos antes de continuar.
-        </div>
-
-        <button
-          class="btn full"
-          id="b-diagnostico"
-          type="button"
-          onclick="runReading()"
-          disabled
-        >
-          <span>
-            Ver leitura da minha jornada
-          </span>
-
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M5 12h14M12 5l7 7-7 7"></path>
-          </svg>
-        </button>
-      </div>
+    <div class="agenda-label">
+      Selecione o dia
     </div>
-  </section>
 
-  <!-- LEITURA COM IA -->
+    <div
+      class="day-grid"
+      id="day-grid"
+    ></div>
 
-  <section
-    class="panel"
-    id="p2"
-    style="display: none;"
-  >
-    <div class="c">
-      <div class="eyebrow">
-        Leitura da jornada
-      </div>
+    <div class="agenda-label">
+      Selecione o horário
+    </div>
 
-      <h2 id="diag-title">
-        Analisando suas respostas...
-      </h2>
+    <div
+      class="time-grid"
+      id="time-grid"
+    ></div>
 
-      <div id="diag-loading">
-        <p class="body">
-          Cruzando os sinais de entrada, conversão,
-          caixa e continuidade da clínica.
-        </p>
+    <button
+      class="btn"
+      id="b-agenda"
+      type="button"
+      onclick="go(7)"
+      disabled
+    >
+      <span>Confirmar horário</span>
 
-        <div class="dots">
-          <div class="dot"></div>
-          <div class="dot"></div>
-          <div class="dot"></div>
-        </div>
-      </div>
+      <svg viewBox="0 0 24 24">
+        <path d="M5 12h14M12 5l7 7-7 7"></path>
+      </svg>
+    </button>
+  </div>
+</section>
 
-      <div
-        id="diag-result"
-        style="display: none;"
+<!-- ═══ PAINEL 7: DADOS ═════════════════════════════ -->
+
+<section
+  class="panel"
+  id="p7"
+  style="display:none"
+>
+  <div class="c">
+    <div class="eyebrow">Seus dados</div>
+
+    <h2>Quase lá. Só seus dados.</h2>
+
+    <div class="field">
+      <label for="f-nome">
+        Nome completo *
+      </label>
+
+      <input
+        id="f-nome"
+        type="text"
+        autocomplete="name"
+        placeholder="Seu nome"
       >
-        <div class="diag-card">
-          <div class="diag-label">
-            Leitura inicial — Loop
-          </div>
-
-          <div
-            class="diag-text"
-            id="diag-text"
-          ></div>
-        </div>
-
-        <button
-          class="btn full"
-          type="button"
-          onclick="go(3)"
-        >
-          <span>
-            Quero reservar meu pré-diagnóstico
-          </span>
-
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M5 12h14M12 5l7 7-7 7"></path>
-          </svg>
-        </button>
-
-        <button
-          class="btn secondary full"
-          type="button"
-          onclick="go(1)"
-        >
-          <span>
-            Revisar minhas respostas
-          </span>
-        </button>
-      </div>
     </div>
-  </section>
 
-  <!-- AGENDA E DADOS -->
-
-  <section
-    class="panel long-panel"
-    id="p3"
-    style="display: none;"
-  >
-    <div class="c">
-      <div class="eyebrow">
-        Pré-diagnóstico Loop
-      </div>
-
-      <h2>
-        Reserve o melhor horário.
-      </h2>
-
-      <div class="schedule-intro">
-        <strong>
-          Conversa estratégica de 45 minutos.
-        </strong>
-
-        <br>
-
-        O objetivo é entender melhor a rota, validar o possível
-        ponto de vazão e identificar qual movimento faz mais
-        sentido agora.
-      </div>
-
-      <div class="agenda-label">
-        Escolha o dia
-      </div>
-
-      <div
-        class="day-grid"
-        id="day-grid"
-      ></div>
-
-      <div class="agenda-label">
-        Escolha o horário
-      </div>
-
-      <div
-        class="time-grid"
-        id="time-grid"
-      ></div>
-
-      <div
-        class="agenda-summary"
-        id="agenda-summary"
-      ></div>
-
-      <div class="form-title">
-        <h3>
-          Agora, só os dados para reservar.
-        </h3>
-
-        <p
-          class="body"
-          style="font-size: 14px;"
-        >
-          Use um WhatsApp que você realmente acompanha.
-        </p>
-      </div>
-
+    <div class="row2">
       <div class="field">
-        <label for="f-nome">
-          Nome completo *
+        <label for="f-clinica">
+          Nome da clínica *
         </label>
 
         <input
-          id="f-nome"
+          id="f-clinica"
           type="text"
-          autocomplete="name"
-          placeholder="Seu nome"
+          autocomplete="organization"
+          placeholder="Clínica..."
         >
       </div>
 
-      <div class="row2">
-        <div class="field">
-          <label for="f-clinica">
-            Nome da clínica *
-          </label>
+      <div class="field">
+        <label for="f-cargo">
+          Cargo / função
+        </label>
 
-          <input
-            id="f-clinica"
-            type="text"
-            autocomplete="organization"
-            placeholder="Nome da clínica"
-          >
-        </div>
-
-        <div class="field">
-          <label for="f-cargo">
-            Cargo / função
-          </label>
-
-          <input
-            id="f-cargo"
-            type="text"
-            placeholder="Sócio, diretor..."
-          >
-        </div>
-      </div>
-
-      <div class="row2">
-        <div class="field">
-          <label for="f-wpp">
-            WhatsApp *
-          </label>
-
-          <input
-            id="f-wpp"
-            type="tel"
-            inputmode="tel"
-            autocomplete="tel"
-            placeholder="(15) 99999-9999"
-          >
-        </div>
-
-        <div class="field">
-          <label for="f-email">
-            E-mail
-          </label>
-
-          <input
-            id="f-email"
-            type="email"
-            inputmode="email"
-            autocomplete="email"
-            placeholder="opcional"
-          >
-        </div>
-      </div>
-
-      <div
-        class="err"
-        id="booking-err"
-      ></div>
-
-      <button
-        class="btn full"
-        id="submit-btn"
-        type="button"
-        onclick="submitBooking()"
-      >
-        <span id="submit-text">
-          Reservar meu horário
-        </span>
-
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M5 12h14M12 5l7 7-7 7"></path>
-        </svg>
-      </button>
-
-      <p class="small-copy">
-        Ao enviar, suas respostas serão usadas apenas para
-        organizar o contato e preparar a conversa com a Loop.
-      </p>
-    </div>
-  </section>
-
-  <!-- CONFIRMAÇÃO -->
-
-  <section
-    class="panel"
-    id="p4"
-    style="display: none;"
-  >
-    <div class="c">
-      <div class="confirm-ring">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-      </div>
-
-      <div class="eyebrow">
-        Solicitação recebida
-      </div>
-
-      <h2>
-        Seu horário foi solicitado.
-      </h2>
-
-      <p class="body">
-        Suas respostas foram registradas para orientar
-        o pré-diagnóstico da jornada da sua clínica.
-      </p>
-
-      <div
-        class="confirm-table"
-        id="confirm-table"
-      ></div>
-
-      <p
-        class="body"
-        style="
-          font-size: 14px;
-          color: #777;
-        "
-      >
-        A Loop poderá entrar em contato pelo WhatsApp informado
-        para confirmar ou ajustar algum detalhe do horário.
-      </p>
-
-      <div class="fnote">
-        Loop Strategic Media — Itapetininga, SP
+        <input
+          id="f-cargo"
+          type="text"
+          placeholder="Diretor, Sócio..."
+        >
       </div>
     </div>
-  </section>
 
-  <script>
-    "use strict";
+    <div class="row2">
+      <div class="field">
+        <label for="f-wpp">
+          WhatsApp *
+        </label>
 
-    /* CONFIGURAÇÃO */
+        <input
+          id="f-wpp"
+          type="tel"
+          inputmode="tel"
+          autocomplete="tel"
+          placeholder="(15) 99999-9999"
+        >
+      </div>
 
-    const SHEETS_URL =
-      "https://script.google.com/macros/s/AKfycbwzYRqSbM7F0aB68xVX-eE7PH8B6Q2QwAda_snz9ibU_Pt0fLd9klIT0kiCOmq3GGxy/exec";
+      <div class="field">
+        <label for="f-email">
+          E-mail
+        </label>
 
-    const S = {
-      q1: "",
-      q2: "",
-      q3: "",
-      q4: "",
+        <input
+          id="f-email"
+          type="email"
+          inputmode="email"
+          autocomplete="email"
+          placeholder="opcional"
+        >
+      </div>
+    </div>
 
-      day: "",
-      dayLabel: "",
-      time: "",
+    <div
+      class="err"
+      id="f-err"
+    >
+      Preencha nome, clínica e WhatsApp.
+    </div>
 
-      aiDiag: "",
-      aiData: null
-    };
+    <button
+      class="btn"
+      id="submit-btn"
+      type="button"
+      onclick="submitLead()"
+    >
+      <span id="submit-text">
+        Confirmar agendamento
+      </span>
 
-    let submitLocked = false;
-    let readingLocked = false;
+      <svg viewBox="0 0 24 24">
+        <path d="M5 12h14M12 5l7 7-7 7"></path>
+      </svg>
+    </button>
+  </div>
+</section>
 
-    /* NAVEGAÇÃO */
+<!-- ═══ PAINEL 8: CONFIRMAÇÃO ═══════════════════════ -->
 
-    function go(panelNumber) {
-      document
-        .querySelectorAll(".panel")
-        .forEach(function (panel) {
-          panel.style.display = "none";
-        });
+<section
+  class="panel"
+  id="p8"
+  style="display:none"
+>
+  <div class="c">
+    <div class="confirm-ring">
+      <svg viewBox="0 0 24 24">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </div>
 
-      const target =
-        document.getElementById(
-          "p" + panelNumber
-        );
+    <div class="eyebrow">
+      Pré-diagnóstico solicitado
+    </div>
 
-      if (!target) {
-        return;
-      }
+    <h2>Tudo certo.</h2>
 
-      target.style.display = "flex";
+    <p class="body">
+      Com base nas suas respostas, a conversa será direcionada para entender onde a jornada da sua clínica pode estar travando ou vazando receita.
+    </p>
 
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
+    <div
+      class="confirm-table"
+      id="confirm-table"
+    ></div>
 
-      if (panelNumber === 3) {
-        buildAgenda();
-      }
+    <p
+      class="body"
+      style="font-size:14px; color:#666;"
+    >
+      A Loop entrará em contato para confirmar o horário e orientar os próximos passos.
+    </p>
+
+    <div class="fnote">
+      Loop Strategic Media — Itapetininga, SP
+    </div>
+  </div>
+</section>
+
+<script>
+"use strict";
+
+/* ── CONFIGURAÇÃO ─────────────────────────────────── */
+
+const SHEETS_URL =
+  "https://script.google.com/macros/s/AKfycbwzYRqSbM7F0aB68xVX-eE7PH8B6Q2QwAda_snz9ibU_Pt0fLd9klIT0kiCOmq3GGxy/exec";
+
+const S = {
+  q1: "",
+  q2: "",
+  q3: "",
+  q4: "",
+
+  day: "",
+  dayLabel: "",
+  time: "",
+
+  aiDiag: "",
+  aiData: null
+};
+
+let transitionLocked = false;
+let readingLocked = false;
+let submitLocked = false;
+
+/* ── NAVEGAÇÃO ────────────────────────────────────── */
+
+function go(n) {
+  document
+    .querySelectorAll(".panel")
+    .forEach(function (panel) {
+      panel.style.display = "none";
+    });
+
+  const target =
+    document.getElementById(
+      "p" + n
+    );
+
+  if (!target) {
+    return;
+  }
+
+  target.style.display = "flex";
+
+  window.scrollTo({
+    top: 0,
+    behavior: "auto"
+  });
+
+  if (n === 6) {
+    buildAgenda();
+  }
+}
+
+/* ── RESPOSTA + AVANÇO AUTOMÁTICO ────────────────── */
+
+function pickAndAdvance(
+  question,
+  value,
+  element,
+  destination
+) {
+  if (transitionLocked) {
+    return;
+  }
+
+  transitionLocked = true;
+
+  const group =
+    element.closest(".options");
+
+  group
+    .querySelectorAll(".opt")
+    .forEach(function (option) {
+      option.classList.remove("sel");
+    });
+
+  element.classList.add("sel");
+
+  S[question] = value;
+
+  window.setTimeout(function () {
+    transitionLocked = false;
+
+    if (destination === "ai") {
+      runAI();
+      return;
     }
 
-    /* RESPOSTAS */
+    go(destination);
+  }, 300);
+}
 
-    function pick(question, value, element) {
-      const optionsGroup =
-        element.closest(".options");
+/* ── AGENDA ───────────────────────────────────────── */
 
-      optionsGroup
-        .querySelectorAll(".opt")
-        .forEach(function (option) {
-          option.classList.remove("sel");
-        });
+function buildAgenda() {
+  const dayGrid =
+    document.getElementById(
+      "day-grid"
+    );
 
-      element.classList.add("sel");
+  const timeGrid =
+    document.getElementById(
+      "time-grid"
+    );
 
-      S[question] = value;
+  if (dayGrid.children.length > 0) {
+    return;
+  }
 
-      checkAnswers();
+  const days = [
+    "Dom",
+    "Seg",
+    "Ter",
+    "Qua",
+    "Qui",
+    "Sex",
+    "Sáb"
+  ];
+
+  const today = new Date();
+
+  let count = 0;
+  let offset = 1;
+
+  while (count < 14) {
+    const date = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() + offset
+    );
+
+    offset += 1;
+
+    if (
+      date.getDay() === 0 ||
+      date.getDay() === 6
+    ) {
+      continue;
     }
 
-    function checkAnswers() {
-      const completed = Boolean(
-        S.q1 &&
-        S.q2 &&
-        S.q3 &&
-        S.q4
+    const label =
+      days[date.getDay()] +
+      " " +
+      date.getDate() +
+      "/" +
+      (date.getMonth() + 1);
+
+    const iso =
+      formatLocalISO(date);
+
+    const cell =
+      document.createElement(
+        "div"
       );
 
-      const button =
-        document.getElementById(
-          "b-diagnostico"
-        );
+    cell.className = "day-cell";
 
-      const error =
-        document.getElementById(
-          "questions-err"
-        );
+    cell.innerHTML =
+      '<div class="day-name">' +
+      days[date.getDay()] +
+      "</div>" +
+      '<div class="day-num">' +
+      date.getDate() +
+      "</div>";
 
-      button.disabled = !completed;
+    cell.addEventListener(
+      "click",
+      function () {
+        dayGrid
+          .querySelectorAll(
+            ".day-cell"
+          )
+          .forEach(function (item) {
+            item.classList.remove(
+              "sel"
+            );
+          });
 
-      if (completed) {
-        error.style.display = "none";
+        cell.classList.add("sel");
+
+        S.day = iso;
+        S.dayLabel = label;
+
+        checkAgenda();
       }
-    }
+    );
 
-    /* DIAGNÓSTICO COM IA */
+    dayGrid.appendChild(cell);
 
-    function runReading() {
-      if (readingLocked) {
-        return;
+    count += 1;
+  }
+
+  [
+    "09:00",
+    "10:00",
+    "11:00",
+    "12:00",
+    "13:00",
+    "14:00",
+    "15:00",
+    "16:00",
+    "17:00",
+    "18:00"
+  ].forEach(function (time) {
+    const cell =
+      document.createElement(
+        "div"
+      );
+
+    cell.className =
+      "time-cell";
+
+    cell.textContent =
+      time;
+
+    cell.addEventListener(
+      "click",
+      function () {
+        timeGrid
+          .querySelectorAll(
+            ".time-cell"
+          )
+          .forEach(function (item) {
+            item.classList.remove(
+              "sel"
+            );
+          });
+
+        cell.classList.add("sel");
+
+        S.time = time;
+
+        checkAgenda();
       }
+    );
 
+    timeGrid.appendChild(cell);
+  });
+}
+
+function checkAgenda() {
+  const button =
+    document.getElementById(
+      "b-agenda"
+    );
+
+  button.disabled =
+    !(S.day && S.time);
+}
+
+function formatLocalISO(date) {
+  return (
+    date.getFullYear() +
+    "-" +
+    pad(date.getMonth() + 1) +
+    "-" +
+    pad(date.getDate())
+  );
+}
+
+function pad(number) {
+  return String(number).padStart(
+    2,
+    "0"
+  );
+}
+
+/* ── DIAGNÓSTICO COM OPENAI ──────────────────────── */
+
+function runAI() {
+  if (readingLocked) {
+    return;
+  }
+
+  if (
+    !S.q1 ||
+    !S.q2 ||
+    !S.q3 ||
+    !S.q4
+  ) {
+    return;
+  }
+
+  readingLocked = true;
+
+  go(5);
+
+  document.getElementById(
+    "diag-title"
+  ).textContent =
+    "Analisando sua jornada...";
+
+  document.getElementById(
+    "diag-loading"
+  ).style.display =
+    "block";
+
+  document.getElementById(
+    "diag-result"
+  ).style.display =
+    "none";
+
+  solicitarDiagnosticoIA()
+    .then(function (resposta) {
       if (
-        !S.q1 ||
-        !S.q2 ||
-        !S.q3 ||
-        !S.q4
+        !resposta ||
+        resposta.ok !== true ||
+        !resposta.diagnostico ||
+        !resposta.diagnostico
+          .diagnostico_curto
       ) {
-        document.getElementById(
-          "questions-err"
-        ).style.display = "block";
-
-        return;
+        throw new Error(
+          resposta &&
+          resposta.erro
+            ? resposta.erro
+            : "O diagnóstico não foi recebido."
+        );
       }
 
-      readingLocked = true;
+      S.aiData =
+        resposta.diagnostico;
 
-      go(2);
+      S.aiDiag =
+        resposta.diagnostico
+          .diagnostico_curto;
 
       document.getElementById(
         "diag-title"
       ).textContent =
-        "Analisando suas respostas...";
+        "Leitura da sua jornada.";
+
+      document.getElementById(
+        "diag-text"
+      ).textContent =
+        S.aiDiag;
 
       document.getElementById(
         "diag-loading"
-      ).style.display = "block";
+      ).style.display =
+        "none";
 
       document.getElementById(
         "diag-result"
-      ).style.display = "none";
-
-      solicitarDiagnosticoIA()
-        .then(function (resposta) {
-          if (
-            !resposta ||
-            resposta.ok !== true ||
-            !resposta.diagnostico ||
-            !resposta.diagnostico
-              .diagnostico_curto
-          ) {
-            throw new Error(
-              resposta && resposta.erro
-                ? resposta.erro
-                : "O diagnóstico não foi recebido."
-            );
-          }
-
-          S.aiData =
-            resposta.diagnostico;
-
-          S.aiDiag =
-            resposta.diagnostico
-              .diagnostico_curto;
-
-          document.getElementById(
-            "diag-title"
-          ).textContent =
-            "Uma primeira leitura apareceu.";
-
-          document.getElementById(
-            "diag-text"
-          ).textContent =
-            S.aiDiag;
-
-          document.getElementById(
-            "diag-loading"
-          ).style.display =
-            "none";
-
-          document.getElementById(
-            "diag-result"
-          ).style.display =
-            "block";
-
-          readingLocked = false;
-        })
-        .catch(function (erro) {
-          console.error(
-            "Erro no diagnóstico:",
-            erro
-          );
-
-          readingLocked = false;
-
-          document.getElementById(
-            "diag-loading"
-          ).style.display =
-            "none";
-
-          alert(
-            "Não foi possível gerar a leitura agora. Aguarde alguns segundos e tente novamente."
-          );
-
-          go(1);
-        });
-    }
-
-    function solicitarDiagnosticoIA() {
-      return new Promise(
-        function (resolve, reject) {
-          const callbackName =
-            "loopDiagnostico_" +
-            Date.now() +
-            "_" +
-            Math.floor(
-              Math.random() * 100000
-            );
-
-          const script =
-            document.createElement(
-              "script"
-            );
-
-          const parametros =
-            new URLSearchParams({
-              acao: "diagnostico",
-              callback: callbackName,
-
-              empresa:
-                "Não informado",
-
-              segmento:
-                "Clínica odontológica",
-
-              servicoPrincipal:
-                "Não informado",
-
-              q1: S.q1,
-              q2: S.q2,
-              q3: S.q3,
-              q4: S.q4,
-
-              outrosDados:
-                "Leitura inicial feita a partir das quatro respostas da VSL."
-            });
-
-          let finalizado = false;
-
-          const tempoLimite =
-            window.setTimeout(
-              function () {
-                if (finalizado) {
-                  return;
-                }
-
-                finalizado = true;
-
-                limpar();
-
-                reject(
-                  new Error(
-                    "A geração do diagnóstico demorou mais que o esperado."
-                  )
-                );
-              },
-              45000
-            );
-
-          window[callbackName] =
-            function (resposta) {
-              if (finalizado) {
-                return;
-              }
-
-              finalizado = true;
-
-              limpar();
-
-              resolve(resposta);
-            };
-
-          script.onerror =
-            function () {
-              if (finalizado) {
-                return;
-              }
-
-              finalizado = true;
-
-              limpar();
-
-              reject(
-                new Error(
-                  "Não foi possível conectar com o sistema da Loop."
-                )
-              );
-            };
-
-          script.src =
-            SHEETS_URL +
-            "?" +
-            parametros.toString();
-
-          document.body.appendChild(
-            script
-          );
-
-          function limpar() {
-            window.clearTimeout(
-              tempoLimite
-            );
-
-            if (script.parentNode) {
-              script.parentNode
-                .removeChild(script);
-            }
-
-            try {
-              delete window[
-                callbackName
-              ];
-            } catch (erro) {
-              window[
-                callbackName
-              ] = undefined;
-            }
-          }
-        }
-      );
-    }
-
-    /* AGENDA */
-
-    function buildAgenda() {
-      const dayGrid =
-        document.getElementById(
-          "day-grid"
-        );
-
-      const timeGrid =
-        document.getElementById(
-          "time-grid"
-        );
-
-      if (
-        dayGrid.dataset.ready ===
-        "true"
-      ) {
-        return;
-      }
-
-      dayGrid.dataset.ready =
-        "true";
-
-      const weekDays = [
-        "Dom",
-        "Seg",
-        "Ter",
-        "Qua",
-        "Qui",
-        "Sex",
-        "Sáb"
-      ];
-
-      const today = new Date();
-
-      let businessDays = 0;
-      let offset = 1;
-
-      while (businessDays < 10) {
-        const date = new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate() + offset
-        );
-
-        offset += 1;
-
-        if (
-          date.getDay() === 0 ||
-          date.getDay() === 6
-        ) {
-          continue;
-        }
-
-        const iso =
-          formatLocalISO(date);
-
-        const label =
-          weekDays[date.getDay()] +
-          ", " +
-          pad(date.getDate()) +
-          "/" +
-          pad(date.getMonth() + 1) +
-          "/" +
-          date.getFullYear();
-
-        const cell =
-          document.createElement(
-            "div"
-          );
-
-        cell.className =
-          "day-cell";
-
-        cell.innerHTML =
-          '<div class="day-name">' +
-          weekDays[date.getDay()] +
-          "</div>" +
-          '<div class="day-num">' +
-          pad(date.getDate()) +
-          "</div>";
-
-        cell.addEventListener(
-          "click",
-          function () {
-            dayGrid
-              .querySelectorAll(
-                ".day-cell"
-              )
-              .forEach(
-                function (item) {
-                  item.classList
-                    .remove("sel");
-                }
-              );
-
-            cell.classList.add(
-              "sel"
-            );
-
-            S.day = iso;
-            S.dayLabel = label;
-
-            updateAgendaSummary();
-          }
-        );
-
-        dayGrid.appendChild(cell);
-
-        businessDays += 1;
-      }
-
-      const availableTimes = [
-        "09:00",
-        "10:00",
-        "11:00",
-        "14:00",
-        "15:00",
-        "16:00",
-        "17:00",
-        "18:00"
-      ];
-
-      availableTimes.forEach(
-        function (time) {
-          const cell =
-            document.createElement(
-              "div"
-            );
-
-          cell.className =
-            "time-cell";
-
-          cell.textContent = time;
-
-          cell.addEventListener(
-            "click",
-            function () {
-              timeGrid
-                .querySelectorAll(
-                  ".time-cell"
-                )
-                .forEach(
-                  function (item) {
-                    item.classList
-                      .remove("sel");
-                  }
-                );
-
-              cell.classList.add(
-                "sel"
-              );
-
-              S.time = time;
-
-              updateAgendaSummary();
-            }
-          );
-
-          timeGrid.appendChild(
-            cell
-          );
-        }
-      );
-    }
-
-    function updateAgendaSummary() {
-      const summary =
-        document.getElementById(
-          "agenda-summary"
-        );
-
-      if (!S.day || !S.time) {
-        summary.style.display =
-          "none";
-
-        return;
-      }
-
-      summary.textContent =
-        "Horário selecionado: " +
-        S.dayLabel +
-        " às " +
-        S.time +
-        " — duração prevista de 45 minutos.";
-
-      summary.style.display =
+      ).style.display =
         "block";
-    }
 
-    function formatLocalISO(date) {
-      return (
-        date.getFullYear() +
-        "-" +
-        pad(date.getMonth() + 1) +
-        "-" +
-        pad(date.getDate())
+      readingLocked = false;
+    })
+    .catch(function (error) {
+      console.error(
+        "Erro no diagnóstico:",
+        error
       );
-    }
 
-    function pad(number) {
-      return String(number)
-        .padStart(2, "0");
-    }
+      readingLocked = false;
 
-    /* ENVIO DO AGENDAMENTO */
-
-    async function submitBooking() {
-      if (submitLocked) {
-        return;
-      }
-
-      const nome =
-        document.getElementById(
-          "f-nome"
-        ).value.trim();
-
-      const clinica =
-        document.getElementById(
-          "f-clinica"
-        ).value.trim();
-
-      const cargo =
-        document.getElementById(
-          "f-cargo"
-        ).value.trim();
-
-      const wpp =
-        document.getElementById(
-          "f-wpp"
-        ).value.trim();
-
-      const email =
-        document.getElementById(
-          "f-email"
-        ).value.trim();
-
-      const error =
-        document.getElementById(
-          "booking-err"
-        );
-
-      const submitButton =
-        document.getElementById(
-          "submit-btn"
-        );
-
-      const submitText =
-        document.getElementById(
-          "submit-text"
-        );
-
-      error.style.display =
+      document.getElementById(
+        "diag-loading"
+      ).style.display =
         "none";
 
-      error.textContent = "";
+      alert(
+        "Não foi possível gerar a leitura agora. Aguarde alguns segundos e tente novamente."
+      );
 
-      if (!S.day || !S.time) {
-        showBookingError(
-          "Escolha o dia e o horário antes de reservar."
+      go(4);
+    });
+}
+
+function solicitarDiagnosticoIA() {
+  return new Promise(
+    function (resolve, reject) {
+      const callbackName =
+        "loopDiagnostico_" +
+        Date.now() +
+        "_" +
+        Math.floor(
+          Math.random() * 100000
         );
 
-        return;
-      }
-
-      if (
-        !nome ||
-        !clinica ||
-        !wpp
-      ) {
-        showBookingError(
-          "Preencha nome, clínica e WhatsApp."
+      const script =
+        document.createElement(
+          "script"
         );
 
-        return;
-      }
+      const parameters =
+        new URLSearchParams({
+          acao:
+            "diagnostico",
 
-      const phoneDigits =
-        wpp.replace(/\D/g, "");
+          callback:
+            callbackName,
 
-      if (phoneDigits.length < 10) {
-        showBookingError(
-          "Confira o número do WhatsApp."
-        );
+          empresa:
+            "Não informado",
 
-        return;
-      }
+          segmento:
+            "Clínica odontológica",
 
-      if (
-        email &&
-        !isValidEmail(email)
-      ) {
-        showBookingError(
-          "Confira o endereço de e-mail ou deixe o campo vazio."
-        );
+          servicoPrincipal:
+            "Não informado",
 
-        return;
-      }
+          q1:
+            S.q1,
 
-      const lead = {
-        acao: "agendamento",
+          q2:
+            S.q2,
 
-        nome: nome,
-        clinica: clinica,
-        cargo: cargo,
-        wpp: wpp,
-        email: email,
+          q3:
+            S.q3,
 
-        q1: S.q1,
-        q2: S.q2,
-        q3: S.q3,
-        q4: S.q4,
+          q4:
+            S.q4,
 
-        diagnostico:
-          S.aiDiag,
-
-        pilarPrioritario:
-          S.aiData &&
-          S.aiData
-            .pilar_prioritario
-            ? S.aiData
-                .pilar_prioritario
-            : "",
-
-        possivelVazao:
-          S.aiData &&
-          S.aiData
-            .possivel_vazao
-            ? S.aiData
-                .possivel_vazao
-            : "",
-
-        impactoProvavel:
-          S.aiData &&
-          S.aiData
-            .impacto_provavel
-            ? S.aiData
-                .impacto_provavel
-            : "",
-
-        dataIso:
-          S.day,
-
-        diaLabel:
-          S.dayLabel,
-
-        horario:
-          S.time
-      };
-
-      submitLocked = true;
-
-      submitButton.disabled =
-        true;
-
-      submitText.textContent =
-        "Registrando horário...";
-
-      try {
-        await fetch(
-          SHEETS_URL,
-          {
-            method: "POST",
-
-            mode: "no-cors",
-
-            headers: {
-              "Content-Type":
-                "text/plain;charset=utf-8"
-            },
-
-            body:
-              JSON.stringify(lead)
-          }
-        );
-
-        buildConfirmation({
-          nome: nome,
-          clinica: clinica,
-          wpp: wpp
+          outrosDados:
+            "Leitura inicial feita a partir das quatro respostas da VSL."
         });
 
-        go(4);
+      let finished = false;
 
-      } catch (requestError) {
-        console.error(
-          "Erro no agendamento:",
-          requestError
+      const timeout =
+        window.setTimeout(
+          function () {
+            if (finished) {
+              return;
+            }
+
+            finished = true;
+
+            cleanup();
+
+            reject(
+              new Error(
+                "A geração do diagnóstico demorou mais que o esperado."
+              )
+            );
+          },
+          45000
         );
 
-        submitLocked = false;
+      window[callbackName] =
+        function (response) {
+          if (finished) {
+            return;
+          }
 
-        submitButton.disabled =
-          false;
+          finished = true;
 
-        submitText.textContent =
-          "Reservar meu horário";
+          cleanup();
 
-        showBookingError(
-          "Não foi possível enviar agora. Confira sua internet e tente novamente."
+          resolve(response);
+        };
+
+      script.onerror =
+        function () {
+          if (finished) {
+            return;
+          }
+
+          finished = true;
+
+          cleanup();
+
+          reject(
+            new Error(
+              "Não foi possível conectar com o sistema da Loop."
+            )
+          );
+        };
+
+      script.src =
+        SHEETS_URL +
+        "?" +
+        parameters.toString();
+
+      document.body.appendChild(
+        script
+      );
+
+      function cleanup() {
+        window.clearTimeout(
+          timeout
         );
+
+        if (script.parentNode) {
+          script.parentNode
+            .removeChild(script);
+        }
+
+        try {
+          delete window[
+            callbackName
+          ];
+        } catch (error) {
+          window[
+            callbackName
+          ] = undefined;
+        }
       }
     }
+  );
+}
 
-    function showBookingError(
-      message
-    ) {
-      const error =
-        document.getElementById(
-          "booking-err"
-        );
+/* ── ENVIO DO AGENDAMENTO ────────────────────────── */
 
-      error.textContent =
-        message;
+async function submitLead() {
+  if (submitLocked) {
+    return;
+  }
 
-      error.style.display =
-        "block";
-    }
+  const nome =
+    document.getElementById(
+      "f-nome"
+    ).value.trim();
 
-    function isValidEmail(email) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        .test(email);
-    }
+  const clinica =
+    document.getElementById(
+      "f-clinica"
+    ).value.trim();
 
-    /* CONFIRMAÇÃO */
+  const cargo =
+    document.getElementById(
+      "f-cargo"
+    ).value.trim();
 
-    function buildConfirmation(
-      data
-    ) {
-      const table =
-        document.getElementById(
-          "confirm-table"
-        );
+  const wpp =
+    document.getElementById(
+      "f-wpp"
+    ).value.trim();
 
-      const pontoPercebido =
-        S.aiData &&
-        S.aiData
-          .pilar_prioritario
-          ? S.aiData
-              .pilar_prioritario
-          : S.q2;
+  const email =
+    document.getElementById(
+      "f-email"
+    ).value.trim();
 
-      table.innerHTML =
-        '<div class="confirm-row">' +
-          "<span>Nome</span>" +
-          "<span>" +
-            escapeHTML(
-              data.nome
-            ) +
-          "</span>" +
-        "</div>" +
+  const error =
+    document.getElementById(
+      "f-err"
+    );
 
-        '<div class="confirm-row">' +
-          "<span>Clínica</span>" +
-          "<span>" +
-            escapeHTML(
-              data.clinica
-            ) +
-          "</span>" +
-        "</div>" +
+  const submitButton =
+    document.getElementById(
+      "submit-btn"
+    );
 
-        '<div class="confirm-row">' +
-          "<span>WhatsApp</span>" +
-          "<span>" +
-            escapeHTML(
-              data.wpp
-            ) +
-          "</span>" +
-        "</div>" +
+  const submitText =
+    document.getElementById(
+      "submit-text"
+    );
 
-        '<div class="confirm-row">' +
-          "<span>Data</span>" +
-          "<span>" +
-            escapeHTML(
-              S.dayLabel
-            ) +
-          "</span>" +
-        "</div>" +
+  error.style.display =
+    "none";
 
-        '<div class="confirm-row">' +
-          "<span>Horário</span>" +
-          "<span>" +
-            escapeHTML(
-              S.time
-            ) +
-          "</span>" +
-        "</div>" +
+  error.textContent =
+    "Preencha nome, clínica e WhatsApp.";
 
-        '<div class="confirm-row">' +
-          "<span>Ponto percebido</span>" +
-          "<span>" +
-            escapeHTML(
-              pontoPercebido
-            ) +
-          "</span>" +
-        "</div>";
-    }
+  if (
+    !nome ||
+    !clinica ||
+    !wpp
+  ) {
+    error.style.display =
+      "block";
 
-    function escapeHTML(value) {
-      return String(value)
-        .replace(
-          /&/g,
-          "&amp;"
-        )
-        .replace(
-          /</g,
-          "&lt;"
-        )
-        .replace(
-          />/g,
-          "&gt;"
-        )
-        .replace(
-          /"/g,
-          "&quot;"
-        )
-        .replace(
-          /'/g,
-          "&#039;"
-        );
-    }
-  </script>
+    return;
+  }
+
+  const phoneDigits =
+    wpp.replace(/\D/g, "");
+
+  if (phoneDigits.length < 10) {
+    error.textContent =
+      "Confira o número do WhatsApp.";
+
+    error.style.display =
+      "block";
+
+    return;
+  }
+
+  if (
+    email &&
+    !isValidEmail(email)
+  ) {
+    error.textContent =
+      "Confira o endereço de e-mail.";
+
+    error.style.display =
+      "block";
+
+    return;
+  }
+
+  const lead = {
+    acao:
+      "agendamento",
+
+    nome:
+      nome,
+
+    clinica:
+      clinica,
+
+    cargo:
+      cargo,
+
+    wpp:
+      wpp,
+
+    email:
+      email,
+
+    q1:
+      S.q1,
+
+    q2:
+      S.q2,
+
+    q3:
+      S.q3,
+
+    q4:
+      S.q4,
+
+    diagnostico:
+      S.aiDiag,
+
+    pilarPrioritario:
+      S.aiData &&
+      S.aiData.pilar_prioritario
+        ? S.aiData.pilar_prioritario
+        : "",
+
+    possivelVazao:
+      S.aiData &&
+      S.aiData.possivel_vazao
+        ? S.aiData.possivel_vazao
+        : "",
+
+    impactoProvavel:
+      S.aiData &&
+      S.aiData.impacto_provavel
+        ? S.aiData.impacto_provavel
+        : "",
+
+    dataIso:
+      S.day,
+
+    diaLabel:
+      S.dayLabel,
+
+    horario:
+      S.time
+  };
+
+  submitLocked = true;
+
+  submitButton.disabled =
+    true;
+
+  submitText.textContent =
+    "Enviando...";
+
+  try {
+    await fetch(
+      SHEETS_URL,
+      {
+        method:
+          "POST",
+
+        mode:
+          "no-cors",
+
+        headers: {
+          "Content-Type":
+            "text/plain;charset=utf-8"
+        },
+
+        body:
+          JSON.stringify(lead)
+      }
+    );
+
+    buildConfirmation({
+      nome:
+        nome,
+
+      clinica:
+        clinica,
+
+      wpp:
+        wpp
+    });
+
+    go(8);
+
+  } catch (requestError) {
+    console.error(
+      "Erro no envio:",
+      requestError
+    );
+
+    submitLocked = false;
+
+    submitButton.disabled =
+      false;
+
+    submitText.textContent =
+      "Confirmar agendamento";
+
+    error.textContent =
+      "Não foi possível enviar agora. Confira sua conexão e tente novamente.";
+
+    error.style.display =
+      "block";
+  }
+}
+
+function buildConfirmation(data) {
+  document.getElementById(
+    "confirm-table"
+  ).innerHTML =
+    '<div class="confirm-row">' +
+      "<span>Nome</span>" +
+      "<span>" +
+        escapeHTML(data.nome) +
+      "</span>" +
+    "</div>" +
+
+    '<div class="confirm-row">' +
+      "<span>Clínica</span>" +
+      "<span>" +
+        escapeHTML(data.clinica) +
+      "</span>" +
+    "</div>" +
+
+    '<div class="confirm-row">' +
+      "<span>WhatsApp</span>" +
+      "<span>" +
+        escapeHTML(data.wpp) +
+      "</span>" +
+    "</div>" +
+
+    '<div class="confirm-row">' +
+      "<span>Data</span>" +
+      "<span>" +
+        escapeHTML(S.dayLabel) +
+      "</span>" +
+    "</div>" +
+
+    '<div class="confirm-row">' +
+      "<span>Horário</span>" +
+      "<span>" +
+        escapeHTML(S.time) +
+      "</span>" +
+    "</div>" +
+
+    '<div class="confirm-row">' +
+      "<span>Foco</span>" +
+      "<span>" +
+        escapeHTML(S.q2) +
+      "</span>" +
+    "</div>";
+}
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    .test(email);
+}
+
+function escapeHTML(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+</script>
 
 </body>
 </html>
